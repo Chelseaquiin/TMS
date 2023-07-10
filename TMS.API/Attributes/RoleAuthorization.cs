@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using TMS.Data.Interfaces;
+using TMS.Models.Entities;
 
 namespace TMS.API.Attributes
 {

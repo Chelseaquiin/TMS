@@ -16,5 +16,6 @@ namespace TMS.Models.Entities
         public UserType UserTypeId { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }
+        public ICollection<Tasks> Tasks { get; set; }
     }
 }

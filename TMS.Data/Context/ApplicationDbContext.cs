@@ -2,22 +2,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 using TMS.Data.Configurations;
 using TMS.Models.Entities;
-using static System.Collections.Specialized.BitVector32;
 
 namespace TMS.Data.Context
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
 
         }
@@ -29,7 +21,7 @@ namespace TMS.Data.Context
             modelBuilder.Entity<IdentityUserRole<string>>()
                 .HasIndex(ur => new { ur.UserId, ur.RoleId })
                 .IsUnique();
-                //.IsClustered(false);
+            //.IsClustered(false);
 
 
 
@@ -42,7 +34,7 @@ namespace TMS.Data.Context
 
             modelBuilder.ApplyConfiguration(new RoleConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
-            
+
         }
 
 
