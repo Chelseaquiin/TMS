@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -6,8 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TMS.Data.Interfaces;
+using TMS.Models.Commons;
+using TMS.Models.Dtos.Requests;
 using TMS.Models.Dtos.Responses;
 using TMS.Models.Entities;
+using TMS.Models.Enums;
 using TMS.Services.Interfaces;
 
 namespace TMS.Services.Implementations
@@ -19,7 +24,6 @@ namespace TMS.Services.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IRepository<ApplicationUser> _userRepo;
-        private readonly IRepository<UserProfile> _userProfile;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IJWTAuthenticator _jWTAuthenticator;
         private readonly IConfiguration _configuration;
@@ -35,7 +39,6 @@ namespace TMS.Services.Implementations
             _userManager = _serviceFactory.GetService<UserManager<ApplicationUser>>();
             _roleManager = _serviceFactory.GetService<RoleManager<ApplicationRole>>();
             _userRepo = _unitOfWork.GetRepository<ApplicationUser>();
-            _userProfile = _unitOfWork.GetRepository<UserProfile>();
             _jWTAuthenticator = jWTAuthenticator;
             _configuration = configuration;
             _emailService = emailService;
@@ -71,14 +74,6 @@ namespace TMS.Services.Implementations
                 UserTypeId = userRole.Type
             };
 
-            UserProfile newUser = new()
-            {
-                ApplicationUserId = user.Id,
-                Department = request.Department,
-                MatricNumber = request.MatricNumber
-            };
-
-
             IdentityResult result = await _userManager.CreateAsync(user, request.Password);
 
             if (!result.Succeeded)
@@ -87,15 +82,6 @@ namespace TMS.Services.Implementations
                 throw new InvalidOperationException(message);
 
             }
-
-            await _userProfile.AddAsync(newUser);
-
-            string? role = user.UserTypeId.GetStringValue();
-            bool roleExist = await _roleManager.RoleExistsAsync(role);
-            if (roleExist)
-                await _userManager.AddToRoleAsync(user, role);
-            else
-                await _roleManager.CreateAsync(new ApplicationRole(role));
 
             return new AccountResponse
             {
@@ -211,5 +197,6 @@ namespace TMS.Services.Implementations
 
             return "Email changed successfully";
         }
+
     }
 }

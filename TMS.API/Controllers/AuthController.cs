@@ -2,7 +2,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using TMS.Models.Dtos.Requests;
+using TMS.Models.Dtos.Responses;
 using TMS.Services.Interfaces;
+using static TMS.Services.Infrastructure.Responses;
 
 namespace TMS.API.Controllers
 {
@@ -10,36 +13,39 @@ namespace TMS.API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthenticationService _authenticationService;
-        public AuthController(IAuthenticationService authenticationService)
+        private readonly IAuthenticationService _authService;
+        public AuthController(IAuthenticationService authService)
         {
-            _authenticationService = authenticationService;
+            _authService = authService;
         }
 
         [AllowAnonymous]
-        [HttpPost("create-new-admin", Name = "Create-New-Admin")]
-        [SwaggerOperation(Summary = "Creates Admin")]
-        [SwaggerResponse(StatusCodes.Status200OK, Description = "UserId of created user", Type = typeof(AuthResponse))]
+        [HttpPost("create-new-user", Name = "Create-New-User")]
+        [SwaggerOperation(Summary = "Creates user")]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "UserId of created user", Type = typeof(AuthenticationResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "User with provided email already exists", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to create user", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> CreateAdmin(AdminRegistration request)
+        public async Task<IActionResult> CreateUser(UserRegistrationRequest request)
         {
-            AuthResponse response = await _authenticationService.CreateAdmin(request);
+            AccountResponse response = await _authService.CreateUser(request);
             return Ok(response);
         }
+
 
         [AllowAnonymous]
         [HttpPost("login", Name = "Login")]
         [SwaggerOperation(Summary = "Authenticates user")]
-        [SwaggerResponse(StatusCodes.Status200OK, Description = "returns user Id", Type = typeof(AuthResponse))]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "returns user Id", Type = typeof(AuthenticationResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Invalid username or password", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
         public async Task<ActionResult<AuthenticationResponse>> Login(LoginRequest request)
         {
-            AuthenticationResponse response = await _authenticationService.AdminLogin(request);
+            AuthenticationResponse response = await _authService.UserLogin(request);
             return Ok(response);
         }
+
+
 
         [AllowAnonymous]
         [HttpPost("forgot-password", Name = "Forgot password")]
@@ -49,9 +55,10 @@ namespace TMS.API.Controllers
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
         public async Task<IActionResult> ForgotPassword(string email)
         {
-            AuthResponse response = await _authenticationService.ForgotPasswordAsync(email);
+            AccountResponse response = await _authService.ForgotPasswordAsync(email);
             return Ok(response);
         }
+
 
         [AllowAnonymous]
         [HttpPost("reset-password", Name = "Reset Password")]
@@ -63,7 +70,7 @@ namespace TMS.API.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _authenticationService.ResetPasswordAsync(request);
+                var result = await _authService.ResetPasswordAsync(request);
 
                 if (result.Success)
                     return Ok(result);
@@ -73,5 +80,6 @@ namespace TMS.API.Controllers
 
             return BadRequest("Some properties are not valid");
         }
+
     }
 }

@@ -6,6 +6,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using TMS.Models.Dtos.Requests;
 using TMS.Models.Entities;
 using TMS.Services.Interfaces;
+using TMS.Models.Dtos.Responses;
 
 namespace TMS.API.Controllers
 {
@@ -37,7 +38,7 @@ namespace TMS.API.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Gets item with id", Type = typeof(SuccessResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Invalid username or password", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
-        public async Task<ActionResult<IEnumerable<Tasks>>> GetToDoItem(int Id)
+        public async Task<ActionResult<IEnumerable<Tasks>>> GetToDoItem(string Id)
         {
             Tasks response = await _taskManager.GetToDoItem(Id);
             return Ok(response);
@@ -61,7 +62,7 @@ namespace TMS.API.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Updates a to do item", Type = typeof(SuccessResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Invalid username or password", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
-        public async Task<ActionResult<ToDoItemResponse>> UpdateToDoItem(int Id, CreateToDoItemRequest request)
+        public async Task<ActionResult<ToDoItemResponse>> UpdateToDoItem(string Id, CreateToDoItemRequest request)
         {
             await _taskManager.UpdateToDoItem(Id, request);
             return Ok();
@@ -73,7 +74,7 @@ namespace TMS.API.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Deletes a to do item", Type = typeof(SuccessResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Invalid username or password", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
-        public async Task<ActionResult<ToDoItemResponse>> DeleteToDoItem(int Id)
+        public async Task<ActionResult<ToDoItemResponse>> DeleteToDoItem(string Id)
         {
             await _taskManager.DeleteToDoItem(Id);
             return Ok();
@@ -85,7 +86,7 @@ namespace TMS.API.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, Description = "toggles a to do item", Type = typeof(SuccessResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Invalid username or password", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
-        public async Task<ActionResult<ToDoItemResponse>> ToggleToDoItem(int Id)
+        public async Task<ActionResult<ToDoItemResponse>> ToggleToDoItem(string Id)
         {
             await _taskManager.ToggleToDoItem(Id);
             return Ok();
