@@ -20,20 +20,6 @@ namespace TMS.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("create-new-user", Name = "Create-New-User")]
-        [SwaggerOperation(Summary = "Creates user")]
-        [SwaggerResponse(StatusCodes.Status200OK, Description = "UserId of created user", Type = typeof(AuthenticationResponse))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "User with provided email already exists", Type = typeof(ErrorResponse))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to create user", Type = typeof(ErrorResponse))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> CreateUser(UserRegistrationRequest request)
-        {
-            AccountResponse response = await _authService.CreateUser(request);
-            return Ok(response);
-        }
-
-
-        [AllowAnonymous]
         [HttpPost("login", Name = "Login")]
         [SwaggerOperation(Summary = "Authenticates user")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "returns user Id", Type = typeof(AuthenticationResponse))]
@@ -44,8 +30,6 @@ namespace TMS.API.Controllers
             AuthenticationResponse response = await _authService.UserLogin(request);
             return Ok(response);
         }
-
-
 
         [AllowAnonymous]
         [HttpPost("forgot-password", Name = "Forgot password")]
@@ -58,7 +42,6 @@ namespace TMS.API.Controllers
             AccountResponse response = await _authService.ForgotPasswordAsync(email);
             return Ok(response);
         }
-
 
         [AllowAnonymous]
         [HttpPost("reset-password", Name = "Reset Password")]

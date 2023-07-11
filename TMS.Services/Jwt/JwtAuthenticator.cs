@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TMS.Models.Dtos.Responses;
 using TMS.Models.Entities;
+using TMS.Models.Enums;
 using TMS.Services.Interfaces;
 
 namespace TMS.Services.Jwt
@@ -62,54 +63,6 @@ namespace TMS.Services.Jwt
                 Expires = string.IsNullOrWhiteSpace(expires)
                     ? DateTime.Now.AddHours(double.Parse(expire))
                     : DateTime.Now.AddMinutes(double.Parse(expires)),
-                SigningCredentials =
-                    new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                Issuer = issuer,
-                Audience = audience
-            };
-
-            var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-            var jwtToken = jwtTokenHandler.WriteToken(token);
-
-            return new JwtToken
-            {
-                Token = jwtToken,
-                Issued = DateTime.Now,
-                Expires = tokenDescriptor.Expires
-            };
-
-        }
-
-        public async Task<JwtToken> GenerateMagicLinkToken(VoterProfile user, DateTime expires)
-        {
-            Regex regex = new Regex("[^a-zA-Z0-9]");
-            var userName = Regex.Replace(user.RegNo, "[^a-zA-Z0-9]", String.Empty);
-
-            JwtSecurityTokenHandler jwtTokenHandler = new();
-            string jwtConfig = _configuration.GetSection("JwtConfig:Key").Value;
-
-            var key = Encoding.ASCII.GetBytes(jwtConfig);
-
-            IdentityOptions _options = new();
-
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Sub, userName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("Department", user.Department),
-                new Claim("Faculty", user.Faculty),
-                new Claim("RegNo", user.RegNo)
-            };
-
-            string issuer = _configuration.GetSection("JwtConfig:Issuer").Value;
-            string audience = _configuration.GetSection("JwtConfig:Audience").Value;
-            string expire = _configuration.GetSection("JwtConfig:Expires").Value;
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = expires,
                 SigningCredentials =
                     new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Issuer = issuer,

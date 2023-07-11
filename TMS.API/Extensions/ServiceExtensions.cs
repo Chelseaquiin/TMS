@@ -37,6 +37,9 @@ namespace TMS.API.Extensions
             services.AddScoped<IServiceFactory, ServiceFactory>();
             services.AddScoped<IJWTAuthenticator, JwtAuthenticator>();
             services.AddScoped<IAuthorizationHandler, AuthHandler>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<ITaskService, TaskService>();
+            services.AddScoped<IUserService, UserService>();
 
 
         }

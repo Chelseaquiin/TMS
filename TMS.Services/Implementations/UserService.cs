@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TMS.Data.Interfaces;
+using TMS.Models.Dtos.Requests;
+using TMS.Models.Dtos.Responses;
 using TMS.Models.Entities;
 using TMS.Services.Interfaces;
 
@@ -16,7 +18,6 @@ namespace TMS.Services.Implementations
         private readonly IServiceFactory _serviceFactory;
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IRepository<UserProfile> _userRepo;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IJWTAuthenticator _jWTAuthenticator;
         private readonly IConfiguration _configuration;
@@ -28,7 +29,6 @@ namespace TMS.Services.Implementations
             _unitOfWork = _serviceFactory.GetService<IUnitOfWork>();
             _userManager = _serviceFactory.GetService<UserManager<ApplicationUser>>();
             _roleManager = _serviceFactory.GetService<RoleManager<ApplicationRole>>();
-            _userRepo = _unitOfWork.GetRepository<UserProfile>();
             _emailService = _serviceFactory.GetService<IEmailService>();
             _configuration = _serviceFactory.GetService<IConfiguration>();
             _jWTAuthenticator = _serviceFactory.GetService<IJWTAuthenticator>();

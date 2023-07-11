@@ -20,10 +20,8 @@ namespace TMS.Data.Context
 
             modelBuilder.Entity<IdentityUserRole<string>>()
                 .HasIndex(ur => new { ur.UserId, ur.RoleId })
-                .IsUnique();
-            //.IsClustered(false);
-
-
+                .IsUnique()
+                .IsClustered(false);
 
             modelBuilder.Entity<IdentityUserLogin<string>>()
                 .HasKey(e => e.UserId);

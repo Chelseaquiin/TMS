@@ -12,6 +12,5 @@ namespace TMS.Services.Interfaces
     public interface IJWTAuthenticator
     {
         Task<JwtToken> GenerateJwtToken(ApplicationUser user, string expires = null, List<Claim> additionalClaims = null);
-        Task<JwtToken> GenerateMagicLinkToken(VoterProfile user, DateTime expires);
     }
 }

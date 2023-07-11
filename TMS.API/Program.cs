@@ -4,6 +4,7 @@ using System.Reflection;
 using TMS.API.Attributes;
 using TMS.API.Extensions;
 using TMS.Data.Context;
+using TMS.Data.DatabaseSeeder;
 using TMS.Models.Entities;
 
 namespace TMS.API
@@ -82,7 +83,7 @@ namespace TMS.API
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
-            //app.SeedData();
+            app.SeedData();
 
             app.MapControllers();
 

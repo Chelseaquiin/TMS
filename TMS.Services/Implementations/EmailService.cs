@@ -41,25 +41,6 @@ namespace TMS.Services.Implementations
             }
         }
 
-        public async Task<bool> MagicLinkEmailAsync(string email, string url)
-        {
-            EmailServiceRequest emailService = new EmailServiceRequest
-            {
-                EmailAddress = new string[] { email }.ToList(),
-                Message = $"Click this link to login. {url}",
-                Subject = "Magic Link"
-            };
-
-            SendEmailResponse response = await SendEmailHelperAsync(emailService);
-            switch (response.HttpStatusCode)
-            {
-                case HttpStatusCode.OK:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         private async Task<SendEmailResponse> SendEmailHelperAsync(EmailServiceRequest request)
         {
             var accessKey = _configuration["AWS:AccessKey"];
