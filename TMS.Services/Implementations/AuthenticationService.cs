@@ -14,6 +14,7 @@ using TMS.Models.Dtos.Responses;
 using TMS.Models.Entities;
 using TMS.Models.Enums;
 using TMS.Services.Interfaces;
+using TMS.Services.Jwt;
 
 namespace TMS.Services.Implementations
 {
@@ -25,24 +26,21 @@ namespace TMS.Services.Implementations
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IRepository<ApplicationUser> _userRepo;
         private readonly RoleManager<ApplicationRole> _roleManager;
-        private readonly IJWTAuthenticator _jWTAuthenticator;
+        private readonly IJWTAuthenticator _jwtAuthenticator;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
 
-        public AuthenticationService(IServiceFactory serviceFactory, IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IJWTAuthenticator jWTAuthenticator, IConfiguration configuration, IEmailService emailService)
+        public AuthenticationService(IServiceFactory serviceFactory)
         {
-            /*   public AuthenticationService(IServiceFactory serviceFactory)
-            {*/
             _serviceFactory = serviceFactory;
             _unitOfWork = _serviceFactory.GetService<IUnitOfWork>();
             _mapper = _serviceFactory.GetService<IMapper>();
             _userManager = _serviceFactory.GetService<UserManager<ApplicationUser>>();
             _roleManager = _serviceFactory.GetService<RoleManager<ApplicationRole>>();
             _userRepo = _unitOfWork.GetRepository<ApplicationUser>();
-            _jWTAuthenticator = jWTAuthenticator;
-            _configuration = configuration;
-            _emailService = emailService;
-            _jWTAuthenticator = _serviceFactory.GetService<IJWTAuthenticator>();
+            _configuration = _serviceFactory.GetService<IConfiguration>();
+            _emailService = _serviceFactory.GetService<IEmailService>();
+            _jwtAuthenticator = _serviceFactory.GetService<IJWTAuthenticator>();
 
         }
 
@@ -102,34 +100,37 @@ namespace TMS.Services.Implementations
                 throw new InvalidOperationException("Invalid username or password");
 
             if (!user.Active)
-                throw new InvalidOperationException("Account is not active");
+                throw new InvalidOperationException("Account Restricted");
 
             bool result = await _userManager.CheckPasswordAsync(user, request.Password);
 
             if (!result)
                 throw new InvalidOperationException("Invalid username or password");
 
-
-            JwtToken userToken = await _jWTAuthenticator.GenerateJwtToken(user);
+            JwtToken userToken = await _jwtAuthenticator.GenerateJwtToken(user);
 
 
             string? userType = user.UserTypeId.GetStringValue();
 
-            string fullName = string.IsNullOrWhiteSpace(user.MiddleName)
-                ? $"{user.LastName} {user.FirstName}"
-                : $"{user.LastName} {user.FirstName} {user.MiddleName}";
+            string fullName = $"{user.LastName} {user.FirstName}";
 
 
-            return new AuthenticationResponse { JwtToken = userToken, UserType = userType, FullName = fullName, TwoFactor = false, UserId = user.Id };
+            return new AuthenticationResponse
+            {
+                JwtToken = userToken,
+                UserType = userType,
+                FullName = fullName,
+                UserId = user.Id
+            };
 
         }
 
 
-        public async Task<AccountResponse> ForgotPasswordAsync(string email)
+        public async Task<AuthResponse> ForgotPasswordAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
-                return new AccountResponse
+                return new AuthResponse
                 {
                     Success = false,
                     Message = "No user associated with email",
@@ -142,12 +143,12 @@ namespace TMS.Services.Implementations
             string apUrl = $"{_configuration["AppUrl"]}/api/Auth/ResetPassword?email={email}&token={validToken}";
             string url = $"<p>Click <a href='{apUrl}'>here</a> to reset your password.</p>";
 
-            var emailSent = await _emailService.SendResetPasswordEmailAsync(email, url);
+            var emailSent = await _emailService.SendResetPasswordEmailAsync(email, apUrl);
             if (!emailSent)
                 throw new InvalidOperationException("something went wrong");
 
 
-            return new AccountResponse
+            return new AuthResponse
             {
                 Success = true,
                 Message = "We've sent you a link via your email to reset your password",
@@ -156,7 +157,7 @@ namespace TMS.Services.Implementations
         }
 
 
-        public async Task<AccountResponse> ResetPasswordAsync(ResetPasswordRequest request)
+        public async Task<AuthResponse> ResetPasswordAsync(ResetPasswordRequest request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
@@ -173,17 +174,14 @@ namespace TMS.Services.Implementations
             var result = await _userManager.ResetPasswordAsync(user, normalToken, request.NewPassword);
 
             if (result.Succeeded)
-                return new AccountResponse
+                return new AuthResponse
                 {
-                    UserId = user.Id,
-                    UserName = user.UserName,
                     Message = "Password has been reset successfully!",
                     Success = true,
                 };
 
-            throw new InvalidOperationException("Something went wrong");
+            throw new InvalidOperationException((result.Errors.FirstOrDefault())?.Description);
         }
-
 
 
         private async Task<string> SaveChangedEmail(string userId, string decodedNewEmail, string decodedToken)
@@ -198,5 +196,6 @@ namespace TMS.Services.Implementations
             return "Email changed successfully";
         }
 
+       
     }
 }

@@ -1,15 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using TMS.Models.Dtos.Responses;
 using TMS.Models.Entities;
 using TMS.Models.Enums;
@@ -33,6 +27,7 @@ namespace TMS.Services.Jwt
             string jwtConfig = _configuration.GetSection("JwtConfig:Key").Value;
 
             var key = Encoding.ASCII.GetBytes(jwtConfig);
+
             string userRole = user.UserTypeId.GetStringValue();
 
             IdentityOptions _options = new();

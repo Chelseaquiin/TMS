@@ -10,6 +10,7 @@ namespace TMS.Services.Interfaces
 {
     public interface ITaskService
     {
+        Task AssignTaskToUser(string userId, string taskId);
         Task CreateToDoItem(CreateToDoItemRequest request);
         Task DeleteToDoItem(string Id);
         Task<IEnumerable<Tasks>> GetAllToDoItems();

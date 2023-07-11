@@ -1,10 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TMS.Data.Interfaces;
 using TMS.Models.Dtos.Requests;
 using TMS.Models.Dtos.Responses;
@@ -36,42 +31,26 @@ namespace TMS.Services.Implementations
 
         public async Task<AccountResponse> UpdateUser(string email, UpdateUserRequest request)
         {
-            ApplicationUser existingUser = await _userManager.FindByEmailAsync(request.Email) ?? throw new InvalidOperationException("User not found.");
+            ApplicationUser existingUser = await _userManager.FindByEmailAsync(email) ?? throw new InvalidOperationException("User not found.");
 
             existingUser.FirstName = request.Firstname;
             existingUser.LastName = request.LastName;
             existingUser.Email = request.Email;
-            existingUser.UserTypeId = request.UserTypeId;
 
-            try
+            await _userManager.UpdateAsync(existingUser);
+            return new AccountResponse()
             {
-                await _userManager.UpdateAsync(existingUser);
-                await _userManager.AddToRoleAsync(existingUser, request.UserTypeId.ToString());
-                return new AccountResponse()
-                {
-                    UserId = existingUser.Id,
-                    UserName = existingUser.UserName,
-                    Success = true,
-                    Message = "Role updated successfully"
-                };
-            }
-            catch (Exception)
-            {
-                return new AccountResponse()
-                {
-                    UserId = existingUser.Id,
-                    UserName = existingUser.UserName,
-                    Success = false,
-                    Message = "Update failed"
-                };
-            }
-
+                UserId = existingUser.Id,
+                UserName = existingUser.UserName,
+                Success = true,
+                Message = "User Updated Successfully"
+            };
         }
 
         public async Task<AccountResponse> CreateNewUser(AdminUserRegistrationRequest request)
         {
 
-            var authenticate = new AuthenticationService(_serviceFactory, _unitOfWork, _userManager, _roleManager, _jWTAuthenticator, _configuration, _emailService);
+            var authenticate = new AuthenticationService(_serviceFactory);
             var creationResult = await authenticate.CreateUser(new UserRegistrationRequest()
             {
                 Password = request.Password,

@@ -39,7 +39,7 @@ namespace TMS.API.Controllers
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
         public async Task<IActionResult> ForgotPassword(string email)
         {
-            AccountResponse response = await _authService.ForgotPasswordAsync(email);
+            AuthResponse response = await _authService.ForgotPasswordAsync(email);
             return Ok(response);
         }
 

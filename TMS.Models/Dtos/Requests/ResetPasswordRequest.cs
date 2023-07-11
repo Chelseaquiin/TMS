@@ -87,7 +87,5 @@ namespace TMS.Models.Dtos.Requests
 
         [Phone]
         public string MobileNumber { get; set; }
-
-        public UserType UserTypeId { get; set; }
     }
 }

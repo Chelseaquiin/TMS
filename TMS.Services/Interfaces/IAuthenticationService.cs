@@ -11,8 +11,8 @@ namespace TMS.Services.Interfaces
     public interface IAuthenticationService
     {
         Task<AccountResponse> CreateUser(UserRegistrationRequest request);
-        Task<AccountResponse> ForgotPasswordAsync(string email);
-        Task<AccountResponse> ResetPasswordAsync(ResetPasswordRequest request);
+        Task<AuthResponse> ForgotPasswordAsync(string email);
+        Task<AuthResponse> ResetPasswordAsync(ResetPasswordRequest request);
         Task<AuthenticationResponse> UserLogin(LoginRequest request);
     }
 }

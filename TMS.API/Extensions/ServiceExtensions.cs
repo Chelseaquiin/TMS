@@ -40,6 +40,8 @@ namespace TMS.API.Extensions
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ITaskService, TaskService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IRoleClaimService, RoleClaimService>();
 
 
         }

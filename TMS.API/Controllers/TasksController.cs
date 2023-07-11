@@ -92,17 +92,17 @@ namespace TMS.API.Controllers
             return Ok();
         }
 
-        /*[AllowAnonymous]
-        [HttpPatch("patch-to-do-list")]
-        [SwaggerOperation(Summary = "Patches to do item")]
-        [SwaggerResponse(StatusCodes.Status200OK, Description = "Profile patched successfully", Type = typeof(string))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "No profile found for user", Type = typeof(ErrorResponse))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to update profile", Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> UpdateStudentProfile(int Id, JsonPatchDocument<CreateToDoItemRequest> request)
+        [AllowAnonymous]
+        [HttpPut("assign-task-to-user")]
+        [SwaggerOperation(Summary = "Assign a task to user")]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "Assigns a task to user", Type = typeof(SuccessResponse))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Invalid username or password", Type = typeof(ErrorResponse))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
+        public async Task<ActionResult<ToDoItemResponse>> AssignTaskToUser(string Id, string taskId)
         {
-            await _taskManager.PatchToDoItem(Id, request);
+            await _taskManager.AssignTaskToUser(Id, taskId);
             return Ok();
-        }*/
+        }
 
     }
 }
